@@ -1,0 +1,76 @@
+[IConfig,2018]
+// This script use ZRemesher method to uniform the lines
+// If Dynamesh, turn off it and remove any subdivision level,
+// but set the subdivision level manually under the var area(the following code before If).
+// If the lines extremely overlapping or have holes, a Hi-res Dynamesh+Close Holes recommended.
+// The script will try a Close Holes automatically anyway.
+// Auto Close Holes may cause some bad affect on remeshed model so take care.
+
+
+
+// Manual specify remesher method(Simulate Hold Alt+Click or not), 0 to turn off
+[VarDef, enableAlternativeRemesher, 1]
+
+// Smooth divide 1 or sharp divide 0
+[VarDef, enableSmoothDivide, 1]
+
+// Set to 1 if it's a Dynamesh model or wish to manual set subd level, otherwise 0
+[VarDef, enableManualSubdLevel, 1]
+
+// Manual specify subdivision level
+[VarDef, manualSubdLevel, 4]
+
+[If, 1=1,
+	// Switch to high subdivision level
+	[ISet,Tool:Geometry:SDiv,15]
+	
+	// Save subdivision level
+	[VarDef, currentSdivLevel, [IGet, Tool:Geometry:SDiv]]
+	
+	// Manual specify subdivision level if it's a dynamesh
+	[If, enableManualSubdLevel > 0,
+		[VarSet, currentSdivLevel, manualSubdLevel]
+	]
+	
+	// Copy and adjust subtool index
+	[IPress,Tool:SubTool:Duplicate]
+	[IPress,Tool:SubTool:MoveUp]
+	[IPress,Tool:SubTool:SelectDown]
+	
+	// Fix potential holes to prevent ZRemesher fail
+	[IPress,Tool:Geometry:Del Lower]
+	[IPress,Tool:Geometry:Close Holes]
+
+	// Disable smooth divide to prevent bad typology(if disabled)
+	[If, enableSmoothDivide > 0,
+		[IPress,Tool:Geometry:Smt]
+	,
+		[IUnPress,Tool:Geometry:Smt]
+	]
+	
+	// Call ZRemesher
+	[If, enableAlternativeRemesher > 0,
+		[IKeyPress,ALT,[IPress,Tool:Geometry:ZRemesher]]
+	,
+		[IPress,Tool:Geometry:ZRemesher]
+	]
+	
+	// Rebuild subdivision level and project at each divide
+	// Do ProjectAll at level 1
+	[IPress,Tool:SubTool:ProjectAll]
+	
+	// Since project-ed once for level 2, subtract 1 then start loop for increased levels
+	[VarDef, loopCount, currentSdivLevel - 1]
+	[Loop, loopCount,
+	
+		// Divde without Smooth to prevent bad mesh
+		[IPress,Tool:Geometry:Divide]
+		[IPress,Tool:SubTool:ProjectAll]
+	]
+	
+	// Refresh GUI
+	[IShowActions,0]
+	[IShowActions,-1]
+	
+	[MessageOK, "Operate complete"]
+]
