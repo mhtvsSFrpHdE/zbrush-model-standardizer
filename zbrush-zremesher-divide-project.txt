@@ -12,7 +12,7 @@
 [VarDef, enableAlternativeRemesher, 1]
 
 // Smooth divide 1 or sharp divide 0
-[VarDef, enableSmoothDivide, 1]
+[VarDef, enableSmoothDivide, 0]
 
 // Set to 1 if it's a Dynamesh model or wish to manual set subd level, otherwise 0
 [VarDef, enableManualSubdLevel, 1]
@@ -48,6 +48,12 @@
 		[IUnPress,Tool:Geometry:Smt]
 	]
 	
+	// Apply Dynamesh in order to prevent mesh broken
+	// I don't understand why a zremesher after another will result in a mesh broken
+	[IUnPress,Tool:Geometry:DynaMesh]
+	[IPress,Tool:Geometry:DynaMesh]
+	// Cancel DynaMesh
+	[IUnPress,Tool:Geometry:DynaMesh]
 	// Call ZRemesher
 	[If, enableAlternativeRemesher > 0,
 		[IKeyPress,ALT,[IPress,Tool:Geometry:ZRemesher]]
@@ -62,7 +68,6 @@
 	// Since project-ed once for level 2, subtract 1 then start loop for increased levels
 	[VarDef, loopCount, currentSdivLevel - 1]
 	[Loop, loopCount,
-	
 		// Divde without Smooth to prevent bad mesh
 		[IPress,Tool:Geometry:Divide]
 		[IPress,Tool:SubTool:ProjectAll]
