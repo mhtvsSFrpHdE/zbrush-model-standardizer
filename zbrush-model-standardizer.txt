@@ -1,7 +1,7 @@
 [IConfig,2018]
-// This script use ZRemesher method to uniform the lines
-// If Dynamesh, turn off it and remove any subdivision level,
-// but set the subdivision level manually under the var area(the following code before If).
+// This script use ZRemesher method to uniform the lines & rebuild high poly model
+// If Dynamesh, turn off it, and remove any subdivision level if exist,
+// but set the subdivision level manually under the var area(the manualSubdLevel).
 // If the lines extremely overlapping or have holes, a Hi-res Dynamesh+Close Holes recommended.
 // The script will try a Close Holes automatically anyway.
 // Auto Close Holes may cause some bad affect on remeshed model so take care.
@@ -20,6 +20,12 @@
 // Manual specify subdivision level
 [VarDef, manualSubdLevel, 4]
 
+// Autofix(Dynamesh, close holes)
+[VarDef, autoFix, 1]
+
+// Autofix\Dynamesh fast mode, skip dynamesh projection
+[VarDef, autofixDynaFast, 0]
+
 [If, 1=1,
 	// Switch to high subdivision level
 	[ISet,Tool:Geometry:SDiv,15]
@@ -36,12 +42,15 @@
 	[IPress,Tool:SubTool:Duplicate]
 	[IPress,Tool:SubTool:MoveUp]
 	[IPress,Tool:SubTool:SelectDown]
-	
-	// Fix potential holes to prevent ZRemesher fail
+	// Remove exist subdivision level
 	[IPress,Tool:Geometry:Del Lower]
-	[IPress,Tool:Geometry:Close Holes]
 
-	// Disable smooth divide to prevent bad typology(if disabled)
+	// Fix potential holes to prevent ZRemesher fail
+	[If, autoFix > 0,
+		[IPress,Tool:Geometry:Close Holes]
+	]
+
+	// Disable smooth divide to prevent bad typology
 	[If, enableSmoothDivide > 0,
 		[IPress,Tool:Geometry:Smt]
 	,
@@ -50,10 +59,25 @@
 	
 	// Apply Dynamesh in order to prevent mesh broken
 	// I don't understand why a zremesher after another will result in a mesh broken
-	[IUnPress,Tool:Geometry:DynaMesh]
-	[IPress,Tool:Geometry:DynaMesh]
-	// Cancel DynaMesh
-	[IUnPress,Tool:Geometry:DynaMesh]
+	[If, autoFix > 0,
+		// Prepair required arguments
+		[IUnPress,Tool:Geometry:Groups]
+		[IUnPress,Tool:Geometry:D.Polish]
+		[ISet,Tool:Geometry:Resolution,4096]
+		[ISet,Tool:Geometry:Blur,0]
+		[ISet,Tool:Geometry:SubProjection,0.6]
+		[If, autofixDynaFast = 0,
+			[IUnPress,Tool:Geometry:Project]
+			[IPress,Tool:Geometry:Project]
+		]
+
+		// Press DynaMesh button
+		[IUnPress,Tool:Geometry:DynaMesh]
+		[IPress,Tool:Geometry:DynaMesh]
+		// Cancel DynaMesh status
+		[IUnPress,Tool:Geometry:DynaMesh]
+	]
+
 	// Call ZRemesher
 	[If, enableAlternativeRemesher > 0,
 		[IKeyPress,ALT,[IPress,Tool:Geometry:ZRemesher]]
