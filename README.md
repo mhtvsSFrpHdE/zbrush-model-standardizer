@@ -1,23 +1,14 @@
-# zbrush-zremesher-uniform-lines
-A early implement of "zbrush-relax-uniform-lines".
+# zbrush-model-standardizer
+Evolved from a early implement of "zbrush-relax-uniform-lines".
 
 **What's this**  
-In sometimes using a sequence of brushes will result in a distorted or uneven mesh.  
-This is bad for further sculpt, and also bad for some ZBrush features.  
-Sometimes may even have bad looking.  
-There're various of approach to solving the situation.  
-**This** script is an early version of "zbrush-relax-uniform-lines",  
-that use an old style to remesh the entire model and uniform the lines.  
-
-The cons now seems:  
-- Random lose details, typically because of the new model can't match the old one vertex by vertex.
-- Too much required preprocess and end up with extreme long run time.
-
-And the reason to left this script and keep its growing is:
-- It can change the polycount by one-click.
-- Use pure text to change interface argument instead of many keyboard & mouse operate.
-
-In the future, it may use as a polycount change tool.  
+There are many cases that before doing sculpt,  
+a model has to be compatible with a wide-used standard in your organization.  
+So you may not able to find that the script is good for you to use.  
+It's very customized for specific occasions.  
+For example, raw object imported from other software,  
+sculpt on a boolean after model, etc.  
+They have mainly use zremesher with project to create subdivisions, and so on.  
 
 **How to use**  
 Clear the mask if there's any on the model.  
@@ -27,12 +18,14 @@ If Run is already activated, the script should start executing.
 In the end, a dialog appear says "Operation complete".  
 
 **Principle**  
-May change by time to time,  
-the script now is very unsure status.  
-Ignore the principle before it can be released.  
+There is some condition value on the top op the script.  
+By condition, it may apply close hole, dynamesh, and dyna-project to the model.  
+then use zremesher, do smooth divide or sharp divide by condition,  
+to get a multi-subdivision of original model.  
 
 **Known issue**  
-Many.  
+Autofix used as a feature collection, and can't only one of the features.  
+No error catch.  
 
 **Special thanks**  
 Grammarly for README.md
