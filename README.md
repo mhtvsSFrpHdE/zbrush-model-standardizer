@@ -1,5 +1,6 @@
 # zbrush-model-standardizer
-Evolved from a early implement of "zbrush-relax-uniform-lines".
+**Contact**  
+See https://github.com/mhtvsSFrpHdE/contact-me  
 
 **What's this**  
 There are many cases that before doing sculpt,  
