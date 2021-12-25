@@ -1,7 +1,6 @@
-# zbrush-model-standardizer
-**Contact**  
-See https://github.com/mhtvsSFrpHdE/contact-me  
+![](https://raw.githubusercontent.com/mhtvsSFrpHdE/contact-me/master/AboutIssue.svg)
 
+# zbrush-model-standardizer
 **What's this**  
 There are many cases that before doing sculpt,  
 a model has to be compatible with a wide-used standard in your organization.  
